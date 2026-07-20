@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	 <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Zapqio.Runner.Module.Core" Version="1.0.0" />
+	</ItemGroup>
+	
+	<!--Zip after publish-->
+	<Target Name="ZipAfterPublish" AfterTargets="Publish">
+		<PropertyGroup>
+			<ZipFileName>$(MSBuildProjectName).zip</ZipFileName>
+			<ZipFilePath>$(PublishDir)..\$(ZipFileName)</ZipFilePath>
+		</PropertyGroup>
+		<Delete Files="$(ZipFilePath)" Condition="Exists('$(ZipFilePath)')" />
+		<ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(ZipFilePath)" />
+		<Message Importance="High" Text="Created: $(ZipFilePath)" />
+	</Target>
+</Project>
