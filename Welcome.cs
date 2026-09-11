@@ -44,6 +44,10 @@ namespace ExampleModule
             var inData = JsonSerializer.Deserialize<DataIn>(data);
             var outData = new List<string>();
             Console.WriteLine("test log info");
+            // Kontekst zadania z hosta runnera (Module.Core 1.1): ten sam JobId przy każdej próbie
+            // tego samego zadania, inny AttemptId. Patrz Wait.cs - tam jest z tego użytek.
+            var context = JobContext.Current;
+            Console.WriteLine($"job {context?.JobId} attempt {context?.AttemptId} method {context?.MethodName}");
             Console.Error.WriteLine("test log error");
             for (int i = 0; i < inData.Count; i++)
             {
