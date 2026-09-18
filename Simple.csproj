@@ -8,7 +8,12 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="Zapqio.Runner.Module.Core" Version="1.1.0" />
+		<!-- Kontrakt tylko do kompilacji: w runtime dostarcza go runner, kopia DLL w zipie jest zbędna.
+		     1.2 = RunnerLog i ILogger w kontenerze modułów; wymaga runnera 0.1.11 lub nowszego. -->
+		<PackageReference Include="Zapqio.Runner.Module.Core" Version="1.2.0" ExcludeAssets="runtime" />
+		<!-- Tylko dla metod, które wolą wstrzyknąć ILogger<T> (LogLevels.cs). Też bez kopii w zipie:
+		     runner ma własną i to jej typami rejestruje logger; druga kopia w paczce rozjechałaby typy. -->
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" ExcludeAssets="runtime" />
 	</ItemGroup>
 	<!--Zip after publish-->
 	<Target Name="ZipAfterPublish" AfterTargets="Publish">
@@ -16,6 +21,8 @@
 			<ZipFileName>$(MSBuildProjectName).zip</ZipFileName>
 			<ZipFilePath>$(PublishDir)..\$(ZipFileName)</ZipFilePath>
 		</PropertyGroup>
+		<!-- Lista bibliotek, które runner ma skanować; bez niej sprawdza wszystkie DLL z paczki. -->
+		<WriteLinesToFile File="$(PublishDir)##Dll" Lines="$(TargetFileName)" Overwrite="true" />
 		<Delete Files="$(ZipFilePath)" Condition="Exists('$(ZipFilePath)')" />
 		<ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(ZipFilePath)" />
 		<Message Importance="High" Text="Created: $(ZipFilePath)" />
